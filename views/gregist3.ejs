@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>GAM Admin Page</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- MetisMenu CSS -->
+    <link href="../../../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../../../dist/css/sb-admin-2.css" rel="stylesheet">
+    <!-- Custom Fonts -->
+    <link href="../../../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+<link href="http://code.google.com/apis/maps/documentation/javascript/examples/default.css" rel="stylesheet" type="text/css" />   
+
+<style>
+    td{
+        height: 70px;
+    }
+    input#input_imgs {
+        display: none;
+    }
+
+    .my_button {
+        display: inline-block;
+        width: 200px;
+        text-align: center;
+        padding: 10px;
+        background-color: #006BCC;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+
+
+    .imgs_wrap {
+
+        border: 2px solid #A8A8A8;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+
+    }
+    .imgs_wrap img {
+        max-width: 150px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+</style>
+
+<script type="text/javascript">   
+    // 이미지 정보들을 담을 배열
+    var sel_files = [];
+    
+    
+            $(document).ready(function() {
+                $("#input_imgs").on("change", handleImgFileSelect);
+            
+                $("#uploadBTN").click(function(){
+                if(confirm("등록하시겠습니까?")){
+                    var form1 = document.getElementById('add1');
+                    console.log(form1.innerHTML);
+                    form1.submit();
+                }
+                });
+            }); 
+    
+            function fileUploadAction() {
+                console.log("fileUploadAction");
+                $("#input_imgs").trigger('click');
+            }
+    
+            function handleImgFileSelect(e) {
+    
+                // 이미지 정보들을 초기화
+                sel_files = [];
+                $(".imgs_wrap").empty();
+    
+                var files = e.target.files;
+                var filesArr = Array.prototype.slice.call(files);
+    
+                var index = 0;
+                filesArr.forEach(function(f) {
+                    if(!f.type.match("image.*")) {
+                        alert("확장자는 이미지 확장자만 가능합니다.");
+                        return;
+                    }
+    
+                    sel_files.push(f);
+    
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var html = "<a href=\"javascript:void(0);\" onclick=\"deleteImageAction("+index+")\" id=\"img_id_"+index+"\"><img src=\"" + e.target.result + "\" data-file='"+f.name+"' class='selProductFile' title='Click to remove'></a>";
+                        $(".imgs_wrap").append(html);
+                        index++;
+    
+                    }
+                    reader.readAsDataURL(f);
+                    
+                });
+            }
+    
+    
+    
+            function deleteImageAction(index) {
+                console.log("index : "+index);
+                console.log("sel length : "+sel_files.length);
+    
+                sel_files.splice(index, 1);
+    
+                var img_id = "#img_id_"+index;
+                $(img_id).remove(); 
+            }
+    
+            function fileUploadAction() {
+                console.log("fileUploadAction");
+                $("#input_imgs").trigger('click');
+            }
+
+            
+
+var geocoder;  
+var map;  
+var marker;  
+  
+function initialize(){ 
+        geocoder = new google.maps.Geocoder();  
+    var latlng = new google.maps.LatLng(37.4507452, 127.1288474);  
+    var myOptions = {  
+        zoom: 15,  
+        center: latlng,  
+        mapTypeId: google.maps.MapTypeId.ROADMAP  
+    }  
+    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);  
+}  
+  
+function codeAddress(){  
+    var address = document.getElementById("address").value;  
+    var r1 = document.getElementById("input_loc");  
+    var r2 = document.getElementById("input_gps"); 
+    var s = document.getElementById("address");
+    r1.value = '';
+    r2.value = '';  
+      
+    geocoder.geocode({  
+        'address': address  
+    }, function(results, status){  
+        if (status == google.maps.GeocoderStatus.OK) {  
+            map.setCenter(results[0].geometry.location);  
+            addMark(results[0].geometry.location.lat(), results[0].geometry.location.lng());  
+            r1.value = results[0].formatted_address + " / " + s.value;
+            r2.value =  marker.position.lat() + " / " + marker.position.lng();    
+        } else {  
+        }  
+    });  
+}  
+  
+function addMark(lat, lng){  
+    if(typeof marker!='undefined'){  
+        marker.setMap(null);  
+    }  
+      
+    marker = new google.maps.Marker({  
+        map: map,  
+        position: new google.maps.LatLng(lat, lng)  
+    });  
+}  
+  
+</script>   
+ <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCS2TwXrcqOdBEfO17VOBWtXbcMe4OWh28"
+ async defer></script>
+    
+</head>
+
+    
+<body onload="initialize()">
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                </button>
+                <a class="navbar-brand" href="./main"><img src="../../../GAMmain.png"></a>
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+                <!-- /.dropdown -->
+                   <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                       </a>
+                       <ul class="dropdown-menu dropdown-user">
+                           <li><a href="./login"><i class="fa fa-sign-out fa-fw"></i> 로그아웃</a>
+                           </li>
+			<li><a href="./changepw"><i class="fa fa-key fa-fw"></i> 비밀번호 변경</a> 
+                        </li>
+                       </ul>
+                       <!-- /.dropdown-user -->
+                </li>
+            <!-- /.dropdown -->
+            </ul>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        
+                        <li>
+                            <a href="/admin/main"><i class="glyphicon glyphicon-home"></i> 메인 홈</a>
+                        </li>
+                        <li>
+                         <!--  <a href="./main"><i class="fa fa-bar-chart-o"></i> Map & chart</a>
+                        </li> -->
+                        <li>
+                            <a href="/admin/notify"><i class="glyphicon glyphicon-edit"></i> 공지사항</a>
+                        </li>
+                        <li>
+                            <a href="/admin/acc"><i class="fa fa-users"></i> 계정관리</a>
+                        </li>
+                        <li>
+                            <a href="/admin/eventlist"><i class="fa fa-flag"></i> 이벤트</a>
+                        </li>
+                        <li>
+                            <a href="/admin/guide"><i class="fa fa-file-audio-o"></i> 가이드</a>
+                        </li>
+                        <li> 
+                            <a href="/admin/coupon"><i class="fa fa-gift"></i> 쿠폰</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+        
+        <!-- Page Content -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2>> 가이드 등록</h2>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <hr>
+                <div class="col-md-12">
+                    <form id='add1' class='addform' name='addguide' method="POST" action="/admin/guide/add/complete" enctype="multipart/form-data">
+                        <div align='right' style="margin-bottom:20px;">
+                             <input type="submit" class="btn btn-success" value="등록완료">
+                        </div>
+                        <div class="col-md-6">
+                            <table style='width:95%;'>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                             <label class="control-label">오디오</label>
+                                        </td>
+                                        <td>
+                                            <input type="file" class="btn btn-default" value="파일 업로드" name='audiofile'>       
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../../../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../../../dist/js/sb-admin-2.js"></script>
+
+</body>
+
+</html>
